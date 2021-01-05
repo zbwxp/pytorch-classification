@@ -162,6 +162,10 @@ class ResNet(nn.Module):
 
             elif model_struct == "B1":
                 block = ABBlock_B1
+
+
+            elif model_struct == "dcn":
+                block = ABBlock_dcn
             else:
                 assert 0, f"block '{model_struct}' is not supported!"
 

@@ -1,5 +1,6 @@
 import torch.nn as nn
 from .se_module import *
+from .deform_conv import DFConv2d
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
@@ -10,6 +11,9 @@ def conv3x3_rand(in_planes, out_planes, stride=1):
     conv.weight.requires_grad = False
 
     return conv
+
+def dcn3x3(in_planes, out_planes, stride=1):
+    return DFConv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
 
 class ABBlock_se(nn.Module):
     expansion = 1
@@ -36,6 +40,41 @@ class ABBlock_se(nn.Module):
         out2 = self.conv2(out1)
         out2 = self.bn2(out2)
         out = self.se_b(out2, out2)  # se
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
+class ABBlock_dcn(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, ):
+        super(ABBlock_dcn, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU()
+        self.conv2 = dcn3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        # self.se_b = SEBLayer(planes, reduction)
+
+        self.downsample = downsample
+        self.stride = stride
+        print("dcn layer")
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out1 = self.relu(out)
+
+        out2 = self.conv2(out1)
+        out2 = self.bn2(out2)
+        # out = self.se_b(out2, out2)  # se
 
         if self.downsample is not None:
             residual = self.downsample(x)
