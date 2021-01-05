@@ -1,0 +1,41 @@
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 123 --model AB_no_conv2 --checkpoint checkpoints/cifar100/AB_no_conv2-20/seed_123
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 234 --model AB_no_conv2 --checkpoint checkpoints/cifar100/AB_no_conv2-20/seed_234
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 345 --model AB_no_conv2 --checkpoint checkpoints/cifar100/AB_no_conv2-20/seed_345
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 456 --model AB_no_conv2 --checkpoint checkpoints/cifar100/AB_no_conv2-20/seed_456
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 567 --model AB_no_conv2 --checkpoint checkpoints/cifar100/AB_no_conv2-20/seed_567
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 678 --model AB_no_conv2 --checkpoint checkpoints/cifar100/AB_no_conv2-20/seed_678
+
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 123 --model AB_rand_conv2 --checkpoint checkpoints/cifar100/AB_rand_conv2-20/seed_123
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 234 --model AB_rand_conv2 --checkpoint checkpoints/cifar100/AB_rand_conv2-20/seed_234
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 345 --model AB_rand_conv2 --checkpoint checkpoints/cifar100/AB_rand_conv2-20/seed_345
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 456 --model AB_rand_conv2 --checkpoint checkpoints/cifar100/AB_rand_conv2-20/seed_456
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 567 --model AB_rand_conv2 --checkpoint checkpoints/cifar100/AB_rand_conv2-20/seed_567
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 678 --model AB_rand_conv2 --checkpoint checkpoints/cifar100/AB_rand_conv2-20/seed_678
+
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 123 --model A_relu --checkpoint checkpoints/cifar100/A_relu-20/seed_123
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 234 --model A_relu --checkpoint checkpoints/cifar100/A_relu-20/seed_234
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 345 --model A_relu --checkpoint checkpoints/cifar100/A_relu-20/seed_345
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 456 --model A_relu --checkpoint checkpoints/cifar100/A_relu-20/seed_456
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 567 --model A_relu --checkpoint checkpoints/cifar100/A_relu-20/seed_567
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 678 --model A_relu --checkpoint checkpoints/cifar100/A_relu-20/seed_678
+
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 123 --model A_reluB --checkpoint checkpoints/cifar100/A_reluB-20/seed_123
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 234 --model A_reluB --checkpoint checkpoints/cifar100/A_reluB-20/seed_234
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 345 --model A_reluB --checkpoint checkpoints/cifar100/A_reluB-20/seed_345
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 456 --model A_reluB --checkpoint checkpoints/cifar100/A_reluB-20/seed_456
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 567 --model A_reluB --checkpoint checkpoints/cifar100/A_reluB-20/seed_567
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 678 --model A_reluB --checkpoint checkpoints/cifar100/A_reluB-20/seed_678
+
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 123 --model A_tanh --checkpoint checkpoints/cifar100/A_tanh-20/seed_123
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 234 --model A_tanh --checkpoint checkpoints/cifar100/A_tanh-20/seed_234
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 345 --model A_tanh --checkpoint checkpoints/cifar100/A_tanh-20/seed_345
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 456 --model A_tanh --checkpoint checkpoints/cifar100/A_tanh-20/seed_456
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 567 --model A_tanh --checkpoint checkpoints/cifar100/A_tanh-20/seed_567
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 678 --model A_tanh --checkpoint checkpoints/cifar100/A_tanh-20/seed_678
+
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 123 --model A_tanhB --checkpoint checkpoints/cifar100/A_tanhB-20/seed_123
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 234 --model A_tanhB --checkpoint checkpoints/cifar100/A_tanhB-20/seed_234
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 345 --model A_tanhB --checkpoint checkpoints/cifar100/A_tanhB-20/seed_345
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 456 --model A_tanhB --checkpoint checkpoints/cifar100/A_tanhB-20/seed_456
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 567 --model A_tanhB --checkpoint checkpoints/cifar100/A_tanhB-20/seed_567
+python cifar.py  -a resnet --dataset cifar100  --depth 20 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --manualSeed 678 --model A_tanhB --checkpoint checkpoints/cifar100/A_tanhB-20/seed_678

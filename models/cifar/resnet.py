@@ -9,6 +9,7 @@ https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
 '''
 import torch.nn as nn
 import math
+from .abBlock import *
 
 
 __all__ = ['resnet']
@@ -92,7 +93,7 @@ class Bottleneck(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, depth, num_classes=1000, block_name='BasicBlock'):
+    def __init__(self, depth, num_classes=1000, block_name='BasicBlock', model_struct=None):
         super(ResNet, self).__init__()
         # Model type specifies number of layers for CIFAR-10 model
         if block_name.lower() == 'basicblock':
@@ -114,6 +115,56 @@ class ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.layer1 = self._make_layer(block, 16, n)
         self.layer2 = self._make_layer(block, 32, n, stride=2)
+        if model_struct is not None:
+            if model_struct == "senet":
+                block = ABBlock_se
+            elif model_struct == "single_B":
+                block = ABBlock_B
+            elif model_struct == "single_A":
+                block = ABBlock_A
+            elif model_struct =="AB":
+                block = ABBlock_AB
+            elif model_struct =="A_se":
+                block = ABBlock_Ase
+            elif model_struct == "A1":
+                block = ABBlock_A1
+            elif model_struct == "A1_se":
+                block = ABBlock_A1se
+            elif model_struct == "A1B":
+                block = ABBlock_A1B
+            elif model_struct == "Awh":
+                block = ABBlock_Awh
+            elif model_struct == "AwhB":
+                block = ABBlock_AwhB
+            elif model_struct == "Awh_se":
+                block = ABBlock_Awh_se
+
+            elif model_struct == "AB_no_conv2":
+                block = ABBlock_AB_no_conv2
+
+            elif model_struct == "AB_rand_conv2":
+                block = ABBlock_AB_rand_conv2
+
+            elif model_struct == "A_relu":
+                block = ABBlock_A_relu
+            elif model_struct == "A_reluB":
+                block = ABBlock_A_reluB
+
+            elif model_struct == "A_tanh":
+                block = ABBlock_A_tanh
+
+            elif model_struct == "A_tanhB":
+                block = ABBlock_A_tanhB
+
+            elif model_struct == "A1.1":
+                block = ABBlock_A1_1
+
+
+            elif model_struct == "B1":
+                block = ABBlock_B1
+            else:
+                assert 0, f"block '{model_struct}' is not supported!"
+
         self.layer3 = self._make_layer(block, 64, n, stride=2)
         self.avgpool = nn.AvgPool2d(8)
         self.fc = nn.Linear(64 * block.expansion, num_classes)
@@ -126,7 +177,7 @@ class ResNet(nn.Module):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 
-    def _make_layer(self, block, planes, blocks, stride=1):
+    def _make_layer(self, block, planes, blocks, stride=1, model_struct=None):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
