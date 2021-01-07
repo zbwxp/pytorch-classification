@@ -180,6 +180,43 @@ class ALayer_v2(nn.Module):
 
         return out
 
+class ALayer_DR1(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(ALayer_DR1, self).__init__()
+        self.se_a = nn.Sequential(nn.Conv2d(channel, channel, kernel_size=3, padding=1, stride=1, bias=False),
+                                  nn.Sigmoid())
+        print("A_Layer_DR1")
+
+    def forward(self, x_in, x_out):
+        y = self.se_a(x_in)
+        return x_out * y
+
+class ALayer_DR1_v1(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(ALayer_DR1_v1, self).__init__()
+        self.se_a = nn.Sequential(nn.Conv2d(channel, channel, kernel_size=3, padding=1, stride=1, bias=False),
+                                  nn.Sigmoid())
+        print("A_Layer_DR1")
+
+    def forward(self, x, weight):
+        A = self.se_a(x)
+        # fold preparations
+        fold_params = dict(kernel_size=(3, 3), dilation=1, padding=1, stride=1)
+        unfold = nn.Unfold(**fold_params)
+        # fold = nn.Fold(x.size()[2:], **fold_params)
+        # apply A to x_out
+        out_unfold = unfold(x)
+        out_unfold = out_unfold * A.flatten(2, -1).repeat(1, 9, 1)  # hardcoded 3x3
+        weight = weight.flatten(1, -1)
+        conv_result = out_unfold.transpose(1, 2).matmul(weight.view(weight.size(0), -1).t()).transpose(1, 2)
+        out = conv_result.view(x.shape)
+
+        # inp = torch.randn(128, 32, 8, 8)
+        # w = torch.randn(72, 32, 3, 3)
+        # inp_unf = unfold(inp)
+        # out_unf = inp_unf.transpose(1, 2).matmul(w.view(w.size(0), -1).t()).transpose(1, 2)
+        # out = torch.nn.functional.fold(out_unf, (7, 8), (1, 1))
+        return out
 
 class ALayer_wh(nn.Module):
     def __init__(self, channel, reduction=16):

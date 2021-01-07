@@ -119,6 +119,155 @@ class ABBlock_B(nn.Module):
 
         return out
 
+class ABBlock_DR1B(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, ):
+        super(ABBlock_DR1B, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.se_b = SEBLayer(planes, reduction)
+        self.se_a = ALayer_DR1(planes, reduction)
+
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out1 = self.relu(out)
+
+        out1 = self.se_a(out1, out1)  # a
+
+        out2 = self.conv2(out1)
+        out2 = self.bn2(out2)
+        out = self.se_b(out1, out2)  # B only
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
+class ABBlock_DR1_v1B(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, ):
+        super(ABBlock_DR1_v1B, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.se_b = SEBLayer(planes, reduction)
+        self.se_a = ALayer_DR1_v1(planes, reduction)
+
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out1 = self.relu(out)
+
+        out2 = self.se_a(out1, self.conv2.weight)  # a
+
+        out2 = self.bn2(out2)
+        out = self.se_b(out1, out2)  # B only
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
+class ABBlock_DR1_v1_randB(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, ):
+        super(ABBlock_DR1_v1_randB, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3_rand(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.se_b = SEBLayer(planes, reduction)
+        self.se_a = ALayer_DR1_v1(planes, reduction)
+
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out1 = self.relu(out)
+
+        out2 = self.se_a(out1, self.conv2.weight)  # a
+
+        out2 = self.bn2(out2)
+        out = self.se_b(out1, out2)  # B only
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
+
+class ABBlock_DR1_rand_B(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, ):
+        super(ABBlock_DR1_rand_B, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3_rand(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.se_b = SEBLayer(planes, reduction)
+        self.se_a = ALayer_DR1(planes, reduction)
+
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out1 = self.relu(out)
+
+        out1 = self.se_a(out1, out1)  # a
+
+        out2 = self.conv2(out1)
+        out2 = self.bn2(out2)
+        out = self.se_b(out1, out2)  # B only
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
+
+
 class ABBlock_B1(nn.Module):
     expansion = 1
 
@@ -140,6 +289,8 @@ class ABBlock_B1(nn.Module):
         out = self.conv1(x)
         out = self.bn1(out)
         out1 = self.relu(out)
+
+        out1 = self.se_a(out1, out1)  # a
 
         out2 = self.conv2(out1)
         out2 = self.bn2(out2)
@@ -406,6 +557,46 @@ class ABBlock_AB(nn.Module):
         out = self.relu(out)
 
         return out
+
+class ABBlock_AB_BN(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, ):
+        super(ABBlock_AB_BN, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.se_a = ALayer(planes, reduction)
+        self.se_b = SEBLayer(planes, reduction)
+
+
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out1 = self.relu(out)
+
+        out1 = self.se_a(out1, out1)  # a
+
+        out2 = self.conv2(out1)
+        out2 = self.se_b(out1, out2)  # se_b
+        out = self.bn2(out2)
+
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
 
 class ABBlock_A_reluB(nn.Module):
     expansion = 1

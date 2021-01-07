@@ -124,6 +124,8 @@ class ResNet(nn.Module):
                 block = ABBlock_A
             elif model_struct =="AB":
                 block = ABBlock_AB
+            elif model_struct =="AB_BN":
+                block = ABBlock_AB_BN
             elif model_struct =="A_se":
                 block = ABBlock_Ase
             elif model_struct == "A1":
@@ -166,6 +168,15 @@ class ResNet(nn.Module):
 
             elif model_struct == "dcn":
                 block = ABBlock_dcn
+
+            elif model_struct == "DR1B":
+                block = ABBlock_DR1B
+            elif model_struct == "DR1_rand_B":
+                block = ABBlock_DR1_rand_B
+            elif model_struct == "DR1_v1B":
+                block = ABBlock_DR1_v1B
+            elif model_struct == "DR1_v1_randB":
+                block = ABBlock_DR1_v1_randB
             else:
                 assert 0, f"block '{model_struct}' is not supported!"
 
