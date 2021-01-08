@@ -1,6 +1,26 @@
 from torch import nn
 import torch
+from torch.nn.parameter import Parameter
+from torch.nn import functional as F
 
+def conv3x3(in_planes, out_planes, stride=1):
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
+
+def conv3x3_rand(in_planes, out_planes, stride=1):
+    conv = nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
+    nn.init.kaiming_normal_(conv.weight)
+    conv.weight.requires_grad = False
+    return conv
+
+def conv3x3_rand_binary(in_planes, out_planes, stride=1):
+    conv = nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
+    nn.init.kaiming_normal_(conv.weight, mode='fan_out', nonlinearity='relu')
+    conv.weight.requires_grad = False
+    conv.weight[conv.weight > 0.05] = 1
+    conv.weight[conv.weight < -0.05] = -1
+    mask = (conv.weight == 1) | (conv.weight == -1)
+    conv.weight[~mask] = 0
+    return conv
 
 class SEBLayer(nn.Module):
     def __init__(self, channel, reduction=16):
@@ -269,3 +289,101 @@ class GCN(nn.Module):
         x = x_l + x_r
 
         return x
+
+class AB_conv3x3(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(AB_conv3x3, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3(c_in, c_out)
+        self.A = Parameter(torch.Tensor(
+                1, in_channels // groups, kernel_size, kernel_size))
+
+        self.B = Parameter(torch.Tensor(
+                out_channels, 1, 1, 1))
+        # initialize to 1
+        torch.nn.init.constant_(self.A, 1)
+        torch.nn.init.constant_(self.B, 1)
+
+
+    def forward(self, x):
+        A = self.A.expand_as(self.conv.weight)
+        B = self.B.expand_as(A)
+        AB = A * B
+        weight = self.conv.weight * AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+
+        return out
+
+class AB_conv3x3_rand(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(AB_conv3x3_rand, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3_rand(c_in, c_out)
+        self.A = Parameter(torch.Tensor(
+                1, in_channels // groups, kernel_size, kernel_size))
+
+        self.B = Parameter(torch.Tensor(
+                out_channels, 1, 1, 1))
+        # initialize to 1
+        torch.nn.init.constant_(self.A, 1)
+        torch.nn.init.constant_(self.B, 1)
+
+
+    def forward(self, x):
+        A = self.A.expand_as(self.conv.weight)
+        B = self.B.expand_as(A)
+        AB = A * B
+        # print("B = ", self.B[1,0,0,0])
+        # print("weight=", self.conv.weight[1,1,1])
+        weight = self.conv.weight * AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+
+        return out
+
+class AB_conv3x3_rand_binary(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(AB_conv3x3_rand_binary, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3_rand_binary(c_in, c_out)
+        self.A = Parameter(torch.Tensor(
+                1, in_channels // groups, kernel_size, kernel_size))
+
+        self.B = Parameter(torch.Tensor(
+                out_channels, 1, 1, 1))
+        # initialize to 1
+        torch.nn.init.constant_(self.A, 1)
+        torch.nn.init.constant_(self.B, 1)
+
+
+    def forward(self, x):
+        A = self.A.expand_as(self.conv.weight)
+        B = self.B.expand_as(A)
+        AB = A * B
+        # print("B = ", self.B[1,0,0,0])
+        # print("weight=", self.conv.weight[1,1,1])
+        weight = self.conv.weight * AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+
+        return out
+
+class dynam_AB_conv3x3_rand(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(dynam_AB_conv3x3_rand, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3_rand(c_in, c_out)
+
+
+    def forward(self, x, a, b):
+        A = a.expand_as(self.conv.weight)
+        B = b.expand_as(A)
+        AB = A * B
+        # print("B = ", self.B[1,0,0,0])
+        # print("weight=", self.conv.weight[1,1,1])
+        weight = self.conv.weight * AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+
+        return out

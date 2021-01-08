@@ -177,6 +177,14 @@ class ResNet(nn.Module):
                 block = ABBlock_DR1_v1B
             elif model_struct == "DR1_v1_randB":
                 block = ABBlock_DR1_v1_randB
+
+            elif model_struct == "ABconv":
+                block = ABBlock_ABconv
+
+            elif model_struct == "ABconv_rand":
+                block = ABBlock_ABconv_rand
+            elif model_struct == "ABconv_rand_binary":
+                block = ABBlock_ABconv_rand_binary
             else:
                 assert 0, f"block '{model_struct}' is not supported!"
 
@@ -187,7 +195,8 @@ class ResNet(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
-                m.weight.data.normal_(0, math.sqrt(2. / n))
+                if m.weight.requires_grad:
+                    m.weight.data.normal_(0, math.sqrt(2. / n))
             elif isinstance(m, nn.BatchNorm2d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
