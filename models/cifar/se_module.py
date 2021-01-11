@@ -238,6 +238,83 @@ class ALayer_DR1_v1(nn.Module):
         # out = torch.nn.functional.fold(out_unf, (7, 8), (1, 1))
         return out
 
+class ALayer_DR1_v1_light(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(ALayer_DR1_v1_light, self).__init__()
+        self.se_a = nn.Sequential(nn.Conv2d(channel, 16, kernel_size=3, padding=1, stride=1, bias=False),
+                                  nn.ReLU(inplace=True),
+                                  nn.Conv2d(16, 1, kernel_size=3, padding=1, stride=1, bias=False),
+                                  nn.Sigmoid())
+        kernel_size = 3
+        self.A_w = Parameter(torch.Tensor(
+                1, channel, kernel_size, kernel_size))
+        torch.nn.init.constant_(self.A_w, 1)
+
+
+        print("A_Layer_DR1_light")
+
+    def forward(self, x, weight):
+        # 3x3xCin to w
+        A_w = self.A_w.expand_as(weight)
+        weight = weight * A_w
+
+        A = self.se_a(x)
+        # fold preparations
+        fold_params = dict(kernel_size=(3, 3), dilation=1, padding=1, stride=1)
+        unfold = nn.Unfold(**fold_params)
+        # fold = nn.Fold(x.size()[2:], **fold_params)
+        # apply A to x_out
+        out_unfold = unfold(x)
+        # HxW to x
+        out_unfold = out_unfold * A.flatten(2, -1).expand(out_unfold.shape)
+        weight = weight.flatten(1, -1)
+        conv_result = out_unfold.transpose(1, 2).matmul(weight.view(weight.size(0), -1).t()).transpose(1, 2)
+        out = conv_result.view(x.shape)
+
+        # inp = torch.randn(128, 32, 8, 8)
+        # w = torch.randn(72, 32, 3, 3)
+        # inp_unf = unfold(inp)
+        # out_unf = inp_unf.transpose(1, 2).matmul(w.view(w.size(0), -1).t()).transpose(1, 2)
+        # out = torch.nn.functional.fold(out_unf, (7, 8), (1, 1))
+        return out
+
+
+class ALayer_DR1_v1_light_v1(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(ALayer_DR1_v1_light_v1, self).__init__()
+        self.se_a = nn.Sequential(nn.Conv2d(channel, 16, kernel_size=3, padding=1, stride=1, bias=False),
+                                  nn.ReLU(inplace=True),
+                                  nn.Conv2d(16, 1, kernel_size=3, padding=1, stride=1, bias=False),
+                                  nn.Sigmoid())
+
+        print("A_Layer_DR1_light")
+
+    def forward(self, x, weight, A_w):
+        # 3x3xCin to w
+        A_w = A_w.expand_as(weight)
+        weight = weight * A_w
+
+        A = self.se_a(x)
+        # fold preparations
+        fold_params = dict(kernel_size=(3, 3), dilation=1, padding=1, stride=1)
+        unfold = nn.Unfold(**fold_params)
+        # fold = nn.Fold(x.size()[2:], **fold_params)
+        # apply A to x_out
+        out_unfold = unfold(x)
+        # HxW to x
+        out_unfold = out_unfold * A.flatten(2, -1).expand(out_unfold.shape)
+        weight = weight.flatten(1, -1)
+        conv_result = out_unfold.transpose(1, 2).matmul(weight.view(weight.size(0), -1).t()).transpose(1, 2)
+        out = conv_result.view(x.shape)
+
+        # inp = torch.randn(128, 32, 8, 8)
+        # w = torch.randn(72, 32, 3, 3)
+        # inp_unf = unfold(inp)
+        # out_unf = inp_unf.transpose(1, 2).matmul(w.view(w.size(0), -1).t()).transpose(1, 2)
+        # out = torch.nn.functional.fold(out_unf, (7, 8), (1, 1))
+        return out
+
+
 class ALayer_wh(nn.Module):
     def __init__(self, channel, reduction=16):
         super(ALayer_wh, self).__init__()
@@ -315,6 +392,83 @@ class AB_conv3x3(nn.Module):
 
         return out
 
+class rand_conv3x3(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(rand_conv3x3, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3(c_in, c_out)
+        self.randmask = torch.zeros_like(self.conv.weight, device='cuda', requires_grad=False)
+        nn.init.kaiming_normal_(self.randmask)
+
+        print("rand_conv")
+
+
+
+    def forward(self, x):
+        AB = self.randmask
+        print("AB=",AB[1,0,0,0].item())
+        weight = self.conv.weight * AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+
+        return out
+
+class AB_as_conv3x3(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(AB_as_conv3x3, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3(c_in, c_out)
+        self.A = Parameter(torch.Tensor(
+                1, in_channels // groups, kernel_size, kernel_size))
+
+        self.B = Parameter(torch.Tensor(
+                out_channels, 1, 1, 1))
+        # initialize to 1
+        torch.nn.init.kaiming_normal_(self.A)
+        torch.nn.init.kaiming_normal_(self.B)
+
+
+    def forward(self, x):
+        A = self.A.expand_as(self.conv.weight)
+        B = self.B.expand_as(A)
+        AB = A * B
+        weight = AB # weight directly = AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+        # print("B = ", self.B[1,0,0,0])
+        # print("weight=", self.conv.weight[1,1,1])
+        return out
+
+class AB_as_conv3x3_res(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(AB_as_conv3x3_res, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3(c_in, c_out)
+        self.A = Parameter(torch.Tensor(
+                1, in_channels // groups, kernel_size, kernel_size))
+
+        self.B = Parameter(torch.Tensor(
+                out_channels, 1, 1, 1))
+        # initialize to 1
+        torch.nn.init.kaiming_normal_(self.A)
+        torch.nn.init.kaiming_normal_(self.B)
+
+
+    def forward(self, x):
+        residual = x
+
+        A = self.A.expand_as(self.conv.weight)
+        B = self.B.expand_as(A)
+        AB = A * B
+        weight = AB # weight directly = AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+        # print("B = ", self.B[1,0,0,0])
+        # print("weight=", self.conv.weight[1,1,1])
+        out += residual
+        return out
+
+
 class AB_conv3x3_rand(nn.Module):
     def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
         super(AB_conv3x3_rand, self).__init__()
@@ -341,6 +495,37 @@ class AB_conv3x3_rand(nn.Module):
         out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
 
         return out
+
+class AB_conv3x3_rand_res(nn.Module):
+    def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):
+        super(AB_conv3x3_rand_res, self).__init__()
+        in_channels = c_in
+        out_channels = c_out
+        self.conv = conv3x3_rand(c_in, c_out)
+        self.A = Parameter(torch.Tensor(
+                1, in_channels // groups, kernel_size, kernel_size))
+
+        self.B = Parameter(torch.Tensor(
+                out_channels, 1, 1, 1))
+        # initialize to 1
+        torch.nn.init.constant_(self.A, 1)
+        torch.nn.init.constant_(self.B, 1)
+
+
+    def forward(self, x):
+        residual = x
+
+        A = self.A.expand_as(self.conv.weight)
+        B = self.B.expand_as(A)
+        AB = A * B
+        # print("B = ", self.B[1,0,0,0])
+        # print("weight=", self.conv.weight[1,1,1])
+        weight = self.conv.weight * AB
+        out = F.conv2d(x, weight, bias=self.conv.bias, stride=self.conv.stride, padding=self.conv.padding)
+        out += residual
+
+        return out
+
 
 class AB_conv3x3_rand_binary(nn.Module):
     def __init__(self, c_in, c_out, stride=1, kernel_size=3, groups=1):

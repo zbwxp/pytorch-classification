@@ -144,6 +144,8 @@ class ResNet(nn.Module):
             elif model_struct == "AB_no_conv2":
                 block = ABBlock_AB_no_conv2
 
+            elif model_struct == "no_conv2":
+                block = ABBlock_no_conv2
             elif model_struct == "AB_rand_conv2":
                 block = ABBlock_AB_rand_conv2
 
@@ -171,18 +173,45 @@ class ResNet(nn.Module):
 
             elif model_struct == "DR1B":
                 block = ABBlock_DR1B
+            elif model_struct == "DR1_full":
+                block = ABBlock_DR1_full
+            elif model_struct == "DR1_full_rand":
+                block = ABBlock_DR1_full_rand
+            elif model_struct == "DR1_strict":
+                block = ABBlock_DR1_strict
+            elif model_struct == "DR1_strict_rand":
+                block = ABBlock_DR1_strict_rand
+            elif model_struct == "DR1_ABconv_randB":
+                block = ABBlock_DR1_ABconv_randB
             elif model_struct == "DR1_rand_B":
                 block = ABBlock_DR1_rand_B
             elif model_struct == "DR1_v1B":
                 block = ABBlock_DR1_v1B
+            elif model_struct == "DR1_v1_lightB":
+                block = ABBlock_DR1_v1_lightB
+            elif model_struct == "DR1_v1_light_randB":
+                block = ABBlock_DR1_v1_light_randB
             elif model_struct == "DR1_v1_randB":
                 block = ABBlock_DR1_v1_randB
 
             elif model_struct == "ABconv":
                 block = ABBlock_ABconv
+            elif model_struct == "rand_conv":
+                block = ABBlock_rand_conv
+            elif model_struct == "AB_as_conv":
+                block = ABBlock_AB_as_conv
+            elif model_struct == "AB_as_conv_res":
+                block = ABBlock_AB_as_conv_res
 
+            elif model_struct == "AB_as_conv3":
+                block = ABBlock_AB_as_conv3
             elif model_struct == "ABconv_rand":
                 block = ABBlock_ABconv_rand
+
+            elif model_struct == "ABconv_res_rand":
+                block = ABBlock_ABconv_res_rand
+            elif model_struct == "ABconv3_rand":
+                block = ABBlock_ABconv3_rand
             elif model_struct == "ABconv_rand_binary":
                 block = ABBlock_ABconv_rand_binary
             else:

@@ -100,4 +100,4 @@ ENV/
 .idea/
 
 *.sh
-previous_train/
+previous_train/*
