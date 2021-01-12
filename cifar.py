@@ -179,7 +179,7 @@ def main():
     model = torch.nn.DataParallel(model).cuda()
     cudnn.benchmark = False
 
-    print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000.0))
+    print('    Total params: %.4fM' % (sum(p.numel() for p in model.parameters())/1000000.0))
 
     total_params = sum(p.numel() for p in model.parameters())/1000000.0
 
@@ -201,6 +201,8 @@ def main():
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title, resume=True)
         # logger.append('    Total params: %.2fM' % total_params)
     else:
+        if args.model is None:
+            args.model = "resnet"
         name = "log_" + args.model + ".txt"
         logger = Logger(os.path.join(args.checkpoint, name), title=title)
         logger.file.writelines('    Total params: %.2fM \n' % total_params)

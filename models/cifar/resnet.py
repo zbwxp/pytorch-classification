@@ -189,6 +189,11 @@ class ResNet(nn.Module):
                 block = ABBlock_DR1_v1B
             elif model_struct == "DR1_v1_lightB":
                 block = ABBlock_DR1_v1_lightB
+            elif model_struct == "DR1_v1_light_v1B":
+                block = ABBlock_DR1_v1_light_v1B
+
+            elif model_struct == "DR1_v1_light_v1se":
+                block = ABBlock_DR1_v1_light_v1se
             elif model_struct == "DR1_v1_light_randB":
                 block = ABBlock_DR1_v1_light_randB
             elif model_struct == "DR1_v1_randB":
@@ -200,6 +205,12 @@ class ResNet(nn.Module):
                 block = ABBlock_rand_conv
             elif model_struct == "AB_as_conv":
                 block = ABBlock_AB_as_conv
+            elif model_struct == "AB_split_kernel_as_conv":
+                block = ABBlock_AB_split_kernel_as_conv
+            elif model_struct == "AB_split_channel_as_conv":
+                block = ABBlock_AB_split_channel_as_conv
+            elif model_struct == "AB_split_channel_kernel_as_conv":
+                block = ABBlock_AB_split_channel_kernel_as_conv
             elif model_struct == "AB_as_conv_res":
                 block = ABBlock_AB_as_conv_res
 
@@ -208,8 +219,17 @@ class ResNet(nn.Module):
             elif model_struct == "ABconv_rand":
                 block = ABBlock_ABconv_rand
 
+            elif model_struct == "AB_split_kernel_conv_rand":
+                block = ABBlock_AB_split_kernel_conv_rand
+            elif model_struct == "AB_split_channel_conv_rand":
+                block = ABBlock_AB_split_channel_conv_rand
+            elif model_struct == "AB_split_channel_kernel_conv_rand":
+                block = ABBlock_AB_split_channel_kernel_conv_rand
+
             elif model_struct == "ABconv_res_rand":
                 block = ABBlock_ABconv_res_rand
+            elif model_struct == "conv3":
+                block = ABBlock_conv3
             elif model_struct == "ABconv3_rand":
                 block = ABBlock_ABconv3_rand
             elif model_struct == "ABconv_rand_binary":
