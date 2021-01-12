@@ -1039,6 +1039,42 @@ class ABBlock_DR1_v1_light_v1B(nn.Module):
 
         return out
 
+class ABBlock_DR1_wh_light_v1B(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, ):
+        super(ABBlock_DR1_wh_light_v1B, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.se_b = SEBLayer(planes, reduction)
+        self.se_a = ALayer_DR1_wh_light_v1(planes, reduction)
+
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out1 = self.relu(out)
+
+        out2 = self.se_a(out1, self.conv2.weight)  # a
+
+        out2 = self.bn2(out2)
+        out = self.se_b(out1, out2)  # B only
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
 class ABBlock_DR1_v1_light_v1se(nn.Module):
     expansion = 1
 

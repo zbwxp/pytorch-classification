@@ -191,6 +191,8 @@ class ResNet(nn.Module):
                 block = ABBlock_DR1_v1_lightB
             elif model_struct == "DR1_v1_light_v1B":
                 block = ABBlock_DR1_v1_light_v1B
+            elif model_struct == "DR1_wh_light_v1B":
+                block = ABBlock_DR1_wh_light_v1B
 
             elif model_struct == "DR1_v1_light_v1se":
                 block = ABBlock_DR1_v1_light_v1se

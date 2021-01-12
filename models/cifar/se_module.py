@@ -322,6 +322,69 @@ class ALayer_DR1_v1_light_v1(nn.Module):
         # out = torch.nn.functional.fold(out_unf, (7, 8), (1, 1))
         return out
 
+class ALayer_DR1_wh_light_v1(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(ALayer_DR1_wh_light_v1, self).__init__()
+        # self.se_a = nn.Sequential(nn.Conv2d(channel, 16, kernel_size=3, padding=1, stride=1, bias=False),
+        #                           nn.ReLU(inplace=True),
+        #                           nn.Conv2d(16, 1, kernel_size=3, padding=1, stride=1, bias=False),
+        #                           nn.Sigmoid())
+        input_w = 8
+        self.conv2_wh = nn.Sequential(
+            nn.Linear(input_w * channel, input_w * channel // 16, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(input_w * channel // 16, input_w, bias=False),
+            nn.Sigmoid()
+        )
+        self.kernel_size = 3
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, channel // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, self.kernel_size * self.kernel_size * channel, bias=False),
+            nn.Sigmoid()
+        )
+
+        print("A_Layer_DR1_v2_light_v1")
+
+    def forward(self, x, weight):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c * self.kernel_size * self.kernel_size,1)
+
+        # A = self.se_a(x)
+
+        x_w = torch.mean(x, dim=2).unsqueeze(2)
+        x_h = torch.mean(x, dim=3).unsqueeze(3)
+
+        # compress channels
+        x_w = x_w.view(x_w.size(0), -1)
+        x_h = x_h.view(x_h.size(0), -1)
+
+        A_w = self.conv2_wh(x_w)
+        A_h = self.conv2_wh(x_h)
+
+        A = A_w.unsqueeze(1).unsqueeze(2) * A_h.unsqueeze(1).unsqueeze(3)
+
+        # fold preparations
+        fold_params = dict(kernel_size=(3, 3), dilation=1, padding=1, stride=1)
+        unfold = nn.Unfold(**fold_params)
+        # fold = nn.Fold(x.size()[2:], **fold_params)
+        # apply A to x_out
+        out_unfold = unfold(x)
+        # HxW to x
+        out_unfold = out_unfold * A.flatten(2, -1).expand(out_unfold.shape) * y.expand(out_unfold.shape)
+        weight = weight.flatten(1, -1)
+        conv_result = out_unfold.transpose(1, 2).matmul(weight.view(weight.size(0), -1).t()).transpose(1, 2)
+        out = conv_result.view(x.shape)
+
+        # inp = torch.randn(128, 32, 8, 8)
+        # w = torch.randn(72, 32, 3, 3)
+        # inp_unf = unfold(inp)
+        # out_unf = inp_unf.transpose(1, 2).matmul(w.view(w.size(0), -1).t()).transpose(1, 2)
+        # out = torch.nn.functional.fold(out_unf, (7, 8), (1, 1))
+        return out
+
 
 class ALayer_DR1_v1_light_vx(nn.Module):
     def __init__(self, channel, reduction=16):
