@@ -50,10 +50,14 @@ parser.add_argument('--epochs', default=90, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
-parser.add_argument('--train-batch', default=256, type=int, metavar='N',
+
+# default 256
+parser.add_argument('--train-batch', default=16, type=int, metavar='N',
                     help='train batchsize (default: 256)')
 parser.add_argument('--test-batch', default=200, type=int, metavar='N',
                     help='test batchsize (default: 200)')
+
+
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--drop', '--dropout', default=0, type=float,

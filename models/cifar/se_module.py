@@ -345,7 +345,7 @@ class ALayer_DR1_wh_light_v1(nn.Module):
             nn.Sigmoid()
         )
 
-        print("A_Layer_DR1_v2_light_v1")
+        print("A_Layer_DR1_wh_light_v1")
 
     def forward(self, x, weight):
         b, c, _, _ = x.size()

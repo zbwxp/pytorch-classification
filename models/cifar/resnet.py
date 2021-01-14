@@ -113,7 +113,12 @@ class ResNet(nn.Module):
                                bias=False)
         self.bn1 = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
+        if model_struct == "CBAM_1_2_3":
+            block = ABBlock_CBAM
         self.layer1 = self._make_layer(block, 16, n)
+        if model_struct == "CBAM_2_3":
+            block = ABBlock_CBAM
+
         self.layer2 = self._make_layer(block, 32, n, stride=2)
         if model_struct is not None:
             if model_struct == "senet":
@@ -236,6 +241,13 @@ class ResNet(nn.Module):
                 block = ABBlock_ABconv3_rand
             elif model_struct == "ABconv_rand_binary":
                 block = ABBlock_ABconv_rand_binary
+
+            elif model_struct == "CBAM":
+                block = ABBlock_CBAM
+            elif model_struct == "CBAM_2_3":
+                block = ABBlock_CBAM
+            elif model_struct == "CBAM_1_2_3":
+                block = ABBlock_CBAM
             else:
                 assert 0, f"block '{model_struct}' is not supported!"
 
