@@ -114,6 +114,7 @@ best_acc = 0  # best test accuracy
 def main():
     global best_acc
     start_epoch = args.start_epoch  # start from epoch 0 or last checkpoint epoch
+    num_classes = 1000
 
     if not os.path.isdir(args.checkpoint):
         mkdir_p(args.checkpoint)
@@ -153,9 +154,18 @@ def main():
                     baseWidth=args.base_width,
                     cardinality=args.cardinality,
                 )
+    elif args.arch.endswith('resnet'):
+        model = models.__dict__[args.arch](
+            num_classes=num_classes,
+            depth=args.depth,
+            block_name=args.block_name,
+            model_struct=args.model
+        )
     else:
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch]()
+
+
 
     if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
         model.features = torch.nn.DataParallel(model.features)

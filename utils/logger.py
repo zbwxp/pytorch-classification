@@ -29,6 +29,8 @@ class Logger(object):
         if fpath is not None:
             if resume: 
                 self.file = open(fpath, 'r') 
+                self.file.readline()
+                self.file.readline()
                 name = self.file.readline()
                 self.names = name.rstrip().split('\t')
                 self.numbers = {}

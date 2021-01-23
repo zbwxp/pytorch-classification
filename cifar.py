@@ -102,6 +102,7 @@ if args.manualSeed is None:
 random.seed(args.manualSeed)
 torch.manual_seed(args.manualSeed)
 if use_cuda:
+    # torch.cuda.manual_seed(args.manualSeed)
     torch.cuda.manual_seed_all(args.manualSeed)
 
 best_acc = 0  # best test accuracy
@@ -179,7 +180,8 @@ def main():
 
     model = torch.nn.DataParallel(model).cuda()
     cudnn.benchmark = False
-
+    cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
     print('    Total params: %.4fM' % (sum(p.numel() for p in model.parameters())/1000000.0))
 
     total_params = sum(p.numel() for p in model.parameters())/1000000.0
@@ -199,14 +201,15 @@ def main():
         start_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
-        logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title, resume=True)
+        name = "log_" + args.model + ".txt"
+        logger = Logger(os.path.join(args.checkpoint, name), title=title, resume=True)
         # logger.append('    Total params: %.2fM' % total_params)
     else:
         if args.model is None:
             args.model = "resnet"
         name = "log_" + args.model + ".txt"
         logger = Logger(os.path.join(args.checkpoint, name), title=title)
-        logger.file.writelines('    Total params: %.2fM \n' % total_params)
+        logger.file.writelines('    Total params: %.4fM \n' % total_params)
         logger.file.writelines('    seed = %i \n' % args.manualSeed)
 
         logger.set_names([ 'Gflops  ', 'Learning Rate', 'Train Loss', 'Valid Loss', 'Train Acc.', 'Valid Acc.'])
@@ -269,7 +272,7 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
         data_time.update(time.time() - end)
 
         if use_cuda:
-            inputs, targets = inputs.cuda(), targets.cuda(async=True)
+            inputs, targets = inputs.cuda(), targets.cuda(non_blocking=True)
         inputs, targets = torch.autograd.Variable(inputs), torch.autograd.Variable(targets)
         if inputs.shape[2] != 32:
             print(inputs.shape)

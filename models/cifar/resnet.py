@@ -127,6 +127,8 @@ class ResNet(nn.Module):
                 block = ABBlock_B
             elif model_struct == "single_A":
                 block = ABBlock_A
+            # elif model_struct == "A_9":
+            #     block = ABBlock_A_9
             elif model_struct =="AB":
                 block = ABBlock_AB
             elif model_struct =="AB_BN":
@@ -178,6 +180,11 @@ class ResNet(nn.Module):
 
             elif model_struct == "DR1B":
                 block = ABBlock_DR1B
+
+            elif model_struct == "DR1":
+                block = ABBlock_DR1
+            elif model_struct == "DR1.2":
+                block = ABBlock_DR1_2
             elif model_struct == "DR1_full":
                 block = ABBlock_DR1_full
             elif model_struct == "DR1_full_rand":
@@ -192,10 +199,80 @@ class ResNet(nn.Module):
                 block = ABBlock_DR1_rand_B
             elif model_struct == "DR1_v1B":
                 block = ABBlock_DR1_v1B
+
+            elif model_struct == "DR1_v1":
+                block = ABBlock_DR1_v1
+            elif model_struct == "DR1_v1.1":
+                block = ABBlock_DR1_v1_1
+
+            elif model_struct == "DR1_v1.2":
+                block = ABBlock_DR1_v1_2
+
+            elif model_struct == "A_unfold":
+                block = ABBlock_A_unfold
+            elif model_struct == "DR1_v2B":
+                block = ABBlock_DR1_v2B
+            elif model_struct == "DR1_v2_randB":
+                block = ABBlock_DR1_v2_randB
+            elif model_struct == "DR1_v3B":
+                block = ABBlock_DR1_v3B
+
+            elif model_struct == "DR1_v3":
+                block = ABBlock_DR1_v3
+
+            elif model_struct == "DR1_v3_r4":
+                block = ABBlock_DR1_v3_r4
+            elif model_struct == "DR1_v3_randB":
+                block = ABBlock_DR1_v3_randB
             elif model_struct == "DR1_v1_lightB":
                 block = ABBlock_DR1_v1_lightB
             elif model_struct == "DR1_v1_light_v1B":
                 block = ABBlock_DR1_v1_light_v1B
+
+            elif model_struct == "DR1_v1_light_v1_randB":
+                block = ABBlock_DR1_v1_light_v1_randB
+
+
+            elif model_struct == "A_v2":
+                block = ABBlock_A_v2
+
+            elif model_struct == "A_light":
+                block = ABBlock_A_light
+            elif model_struct == "A_v2.2":
+                block = ABBlock_A_v2_2
+            elif model_struct == "ADR1":
+                block = ABBlock_ADR1
+            elif model_struct == "A_r_DR1":
+                block = ABBlock_A_r_DR1
+
+            elif model_struct == "ADR1_r4":
+                block = ABBlock_ADR1_r4
+            elif model_struct == "ADR1B":
+                block = ABBlock_ADR1B
+
+
+            elif model_struct == "ADR1B_BN":
+                block = ABBlock_ADR1B_BN
+
+
+            elif model_struct == "ADR1B_r4":
+                block = ABBlock_ADR1B_r4
+
+            elif model_struct == "A_v2B":
+                block = ABBlock_A_v2B
+
+            elif model_struct == "A_v2.2se":
+                block = ABBlock_A_v2_2se
+            elif model_struct == "A_v2.2B":
+                block = ABBlock_A_v2_2B
+
+            elif model_struct == "A_v2.1":
+                block = ABBlock_A_v2_1
+            elif model_struct == "A_v3":
+                block = ABBlock_A_v3
+
+            elif model_struct == "A_v4":
+                block = ABBlock_A_v4
             elif model_struct == "DR1_wh_light_v1B":
                 block = ABBlock_DR1_wh_light_v1B
 
@@ -208,6 +285,10 @@ class ResNet(nn.Module):
 
             elif model_struct == "ABconv":
                 block = ABBlock_ABconv
+
+            elif model_struct == "Cin9Cout":
+                block = ABBlock_Cin9Cout
+
             elif model_struct == "rand_conv":
                 block = ABBlock_rand_conv
             elif model_struct == "AB_as_conv":
@@ -248,6 +329,15 @@ class ResNet(nn.Module):
                 block = ABBlock_CBAM
             elif model_struct == "CBAM_1_2_3":
                 block = ABBlock_CBAM
+
+
+
+            elif model_struct == "DR1_v3B_r16":
+                block = ABBlock_DR1_v3B_r16
+            elif model_struct == "DR1_strict_r16":
+                block = ABBlock_DR1_strict_r16
+            elif model_struct == "DR1_strict_r4":
+                block = ABBlock_DR1_strict_r4
             else:
                 assert 0, f"block '{model_struct}' is not supported!"
 
